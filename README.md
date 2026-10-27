@@ -24,7 +24,7 @@ Abre em http://localhost:3000. Requisito: Node.js 18 ou mais novo. Não há depe
 ```
 server.js                 servidor sem dependências: arquivos do app + cabeçalhos de segurança
 package.json              comando de início (npm start)
-public/
+docs/
   index.html              o app (arquivo único: HTML, CSS, JS e bibliotecas embutidas)
   manifest.webmanifest    dados para instalar no celular
   sw.js                   service worker (abre sem internet)
@@ -33,6 +33,11 @@ supabase/                 scripts SQL do banco
 ```
 
 ## Publicar
+
+**GitHub Pages:** https://geovannaaraujosss520.github.io/santo-santo-santo-app/
+(Settings › Pages › Deploy from a branch › `main` / `/docs`).
+
+**Servidor Node (Render, Railway, Hostinger etc.):**
 
 - Comando de início: `npm start`
 - Comando de build: nenhum
@@ -53,9 +58,11 @@ Os scripts ficam em `supabase/` e rodam em **SQL Editor › New query › Run**.
 | `auditoria_seguranca.sql` | Auditoria somente leitura; não deve aparecer nenhuma linha CRITICO |
 | `exigir_troca_senha.sql` | Opcional: obriga a troca de senha no próximo acesso |
 
+No GitHub Pages não há cabeçalhos de segurança do servidor; as proteções da própria página e do banco continuam valendo. O servidor Node envia esses cabeçalhos extras.
+
 O app usa só a chave pública (`anon`) do Supabase, que pode ficar no código; a proteção dos dados está nas regras do banco. **Nunca** coloque neste repositório a chave `service_role`, a Secret Key do hCaptcha ou senhas de usuários.
 
 ## Atualizar o app
 
-1. Troque `public/index.html`.
-2. Em `public/sw.js`, mude o valor de `VERSAO` (por exemplo, `sss-2026-11-01-1`) para os celulares buscarem a versão nova.
+1. Troque `docs/index.html`.
+2. Em `docs/sw.js`, mude o valor de `VERSAO` (por exemplo, `sss-2026-11-01-1`) para os celulares buscarem a versão nova.

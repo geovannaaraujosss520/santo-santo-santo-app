@@ -7,7 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const PORT = Number(process.env.PORT) || 3000;
-const PUBLIC = path.join(__dirname, 'public');
+const PUBLIC = path.join(__dirname, 'docs');
 const SUPABASE = 'uazetizbzpzdplaynwcl.supabase.co';
 
 const TIPOS = {
@@ -74,7 +74,7 @@ const servidor = http.createServer((req, res) => {
   }
   if (caminho.endsWith('/')) caminho += 'index.html';
 
-  // impede sair da pasta public (ex.: /../server.js)
+  // impede sair da pasta docs (ex.: /../server.js)
   const arquivo = path.normalize(path.join(PUBLIC, caminho));
   if (!arquivo.startsWith(PUBLIC + path.sep)) return responder(res, 403, 'Acesso negado');
 
