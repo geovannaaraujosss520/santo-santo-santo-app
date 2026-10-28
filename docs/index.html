@@ -764,6 +764,45 @@
   .ios-dica button{border:0; background:var(--brass); color:#fff; border-radius:7px; padding:6px 12px; font-family:'Inter',Arial,sans-serif; font-size:12px; cursor:pointer;}
   @media (display-mode: standalone){ .install-btn{display:none !important;} }
   @media (max-width:420px){ .brand-actions .role-btn{padding:7px 9px;} }
+  /* ---- sugestões ---- */
+  .sg-btn{display:inline-flex; align-items:center; gap:5px;}
+  .sg-btn svg{width:15px; height:15px; flex:none;}
+  @media (max-width:520px){ .brand-actions{gap:6px;} .brand-actions .role-btn{padding:7px 8px; font-size:12px;} .sg-btn svg{display:none;} }
+  @media (max-width:350px){ .sg-btn .sg-rot{display:none;} .sg-btn svg{display:block;} }
+  .brand-meta{min-width:0;}
+  .brand-meta h1{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  @media (max-width:440px){ .brand-meta{display:none;} .brand-row{gap:8px;} }
+  @media (max-width:400px){ .admin-badge.active{padding:4px 6px; font-size:10px;} }
+  .dv-sugerir{margin-top:14px; font-family:'Inter',Arial,sans-serif; font-size:12px; background:transparent; border:1px dashed var(--hairline-strong); color:var(--ink-soft); border-radius:7px; padding:6px 11px; cursor:pointer; margin-left:6px;}
+  .dv-sugerir:hover{color:var(--brass-deep); border-color:var(--brass);}
+  #sg-backdrop{align-items:center; padding:16px; z-index:96;}
+  #sg-backdrop .modal{max-width:640px; width:100%; padding:22px 20px 20px; border-radius:18px; max-height:90vh; overflow-y:auto;}
+  #sg-backdrop h3{font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); font-weight:600; margin:0 0 10px;}
+  .sg-tipos{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+  .sg-tipos label{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--hairline-strong); background:var(--card); border-radius:20px; padding:6px 12px; font-size:13px; cursor:pointer;}
+  .sg-tipos input{accent-color:var(--brass); margin:0;}
+  .sg-tipos label:has(input:checked){border-color:var(--brass); background:var(--brass-tint); color:var(--brass-deep); font-weight:600;}
+  #sg-msg{font-family:'Inter',Arial,sans-serif; font-size:14px; color:var(--ink); border:1px solid var(--hairline-strong); border-radius:8px; padding:9px 10px; background:var(--card); outline:none; width:100%; resize:vertical;}
+  #sg-msg:focus{border-color:var(--brass);}
+  .sg-conta{text-align:right; font-size:11px; color:var(--ink-soft); margin-top:4px;}
+  .sg-lista{display:flex; flex-direction:column; gap:8px;}
+  .sg-item{background:var(--card); border:1px solid var(--hairline); border-radius:12px; padding:12px 14px;}
+  .sg-topo{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-size:11.5px; color:var(--ink-soft); margin-bottom:6px;}
+  .sg-topo b{color:var(--ink); font-size:12.5px;}
+  .sg-msgtxt{font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; margin:0;}
+  .sg-resp{margin-top:8px; padding:8px 10px; border-left:3px solid var(--gold); background:var(--gold-tint); border-radius:0 8px 8px 0; font-size:13px; line-height:1.5; white-space:pre-wrap;}
+  .sg-resp b{display:block; font-size:10.5px; letter-spacing:.6px; text-transform:uppercase; color:var(--gold-text); margin-bottom:2px;}
+  .sg-tag{font-size:10.5px; font-weight:600; border-radius:10px; padding:2px 8px;}
+  .sg-tag.nova{background:var(--brass-tint); color:var(--brass-deep);}
+  .sg-tag.em_analise{background:var(--gold-tint); color:var(--gold-text);}
+  .sg-tag.resolvida{background:#E2F2E9; color:#1E6B42;}
+  .sg-edit{display:flex; flex-direction:column; gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--hairline);}
+  .sg-edit select, .sg-edit textarea{font-family:'Inter',Arial,sans-serif; font-size:13px; color:var(--ink); border:1px solid var(--hairline-strong); border-radius:8px; padding:7px 9px; background:var(--card); outline:none; width:100%;}
+  .sg-edit select{width:auto;}
+  .sg-edit .linha{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .sg-novas{display:inline-block; background:var(--brass); color:#fff; border-radius:10px; font-size:10.5px; padding:1px 7px; margin-left:4px; vertical-align:1px;}
+  .sg-novas[hidden]{display:none;}
+  .sg-vazio{padding:16px; text-align:center; font-size:13px; color:var(--ink-soft); background:var(--card); border:1px dashed var(--hairline-strong); border-radius:12px;}
 </style>
 <style>html.framed body{display:none !important;}</style>
 <script>if(window.top !== window.self){ document.documentElement.classList.add('framed'); try{ window.top.location = window.self.location; }catch(e){} }</script>
@@ -773,7 +812,7 @@
   <div class="lock-card">
     <img class="lock-logo" id="lock-logo" alt="Santo Santo Santo">
     <h1>Santo Santo Santo</h1>
-    <p class="lock-sub">Catálogo interno e Devocionário · acesso das unidades</p>
+    <p class="lock-sub">Catálogo interno e Devocionário</p>
     <div class="lock-checking" id="lock-checking">Verificando acesso...</div>
     <form id="lock-form" hidden autocomplete="on">
       <label for="lock-email">E-mail da unidade</label>
@@ -783,7 +822,7 @@
       <div class="lock-captcha" id="lock-captcha" hidden></div>
       <div class="lock-erro" id="lock-erro" role="alert"></div>
       <button type="submit" class="lock-btn" id="lock-btn">Entrar</button>
-      <p class="lock-ajuda">Esqueceu a senha ou não tem acesso? Fale com a franqueadora.</p>
+      <p class="lock-ajuda">Esqueceu a senha ou não tem acesso? Abra um chamado na central do franqueado.</p>
       <div class="ios-dica" id="ios-dica" hidden>
         <p><b>Instale no iPhone:</b> toque em <span class="ios-share" aria-label="Compartilhar">⬆︎</span> Compartilhar e depois em <b>“Adicionar à Tela de Início”</b>.</p>
         <button type="button" id="ios-dica-ok">Entendi</button>
@@ -802,6 +841,7 @@
         <div class="brand-actions">
           <span id="role-label" class="admin-badge"></span>
           <button type="button" id="install-btn" class="role-btn install-btn" hidden>Instalar app</button>
+          <button type="button" id="sg-btn" class="role-btn sg-btn dev-only" title="Sugestões do Devocionário"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg><span class="sg-rot">Sugestões</span><span class="sg-novas" id="sg-novas" hidden></span></button>
           <button type="button" id="pw-btn" class="role-btn" title="Alterar minha senha">Senha</button>
           <button type="button" id="role-btn" class="role-btn">Sair</button>
         </div>
@@ -1017,6 +1057,41 @@
         <label class="pw-ver"><input type="checkbox" id="pw-mostrar"> Mostrar senha</label>
         <div class="us-acoes"><button type="submit" class="file-btn" id="pw-salvar">Salvar nova senha</button><span class="us-status" id="pw-status" role="status"></span></div>
       </form>
+    </div>
+  </div>
+  <div id="sg-backdrop" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sg-titulo">
+      <div class="us-head"><h2 id="sg-titulo">Sugestões</h2><button type="button" class="small-btn" id="sg-fechar">Fechar</button></div>
+      <div id="sg-loja">
+        <form class="us-novo" id="sg-form" autocomplete="off">
+          <h3>Nova sugestão</h3>
+          <div class="sg-tipos" role="radiogroup" aria-label="Assunto">
+            <label><input type="radio" name="sg-tipo" value="novo_santo" checked> Santo que falta</label>
+            <label><input type="radio" name="sg-tipo" value="correcao"> Correção</label>
+            <label><input type="radio" name="sg-tipo" value="oracao"> Oração</label>
+            <label><input type="radio" name="sg-tipo" value="outro"> Outro</label>
+          </div>
+          <label class="us-f" style="margin-bottom:10px"><span>Santo (opcional)</span><input id="sg-santo" maxlength="120" list="sg-santos" placeholder="Ex.: Santa Paulina"></label>
+          <datalist id="sg-santos"></datalist>
+          <label class="us-f"><span>Sua sugestão</span><textarea id="sg-msg" rows="4" minlength="5" maxlength="1000" required placeholder="Ex.: a festa de Santa Edwiges é em 16 de outubro; ou: incluir São Frei Galvão na campanha de outubro"></textarea></label>
+          <div class="sg-conta"><span id="sg-cont">0</span>/1000</div>
+          <div class="us-acoes"><button type="submit" class="file-btn" id="sg-enviar">Enviar sugestão</button><span class="us-status" id="sg-status" role="status"></span></div>
+        </form>
+        <h3>Minhas sugestões</h3>
+        <div class="sg-lista" id="sg-minhas"></div>
+      </div>
+      <div id="sg-admin" hidden>
+        <div class="us-lista-head">
+          <div class="segmented" id="sg-filtro" role="group" aria-label="Filtrar sugestões">
+            <button type="button" class="seg-btn is-active" data-val="abertas">Abertas</button>
+            <button type="button" class="seg-btn" data-val="nova">Novas</button>
+            <button type="button" class="seg-btn" data-val="resolvida">Resolvidas</button>
+            <button type="button" class="seg-btn" data-val="todas">Todas</button>
+          </div>
+          <span class="forn-summary" id="sg-resumo"></span>
+        </div>
+        <div class="sg-lista" id="sg-todas"></div>
+      </div>
     </div>
   </div>
   <div id="cp-backdrop" class="modal-backdrop" hidden>
@@ -2178,6 +2253,130 @@ document.getElementById('download-template-fotos-btn').addEventListener('click',
   document.getElementById('ios-dica-ok').addEventListener('click', () => {
     document.getElementById('ios-dica').hidden = true;
     try{ localStorage.setItem('sss-ios-dica', '1'); }catch(e){}
+  });
+})();
+
+(function(){
+  const back = document.getElementById('sg-backdrop');
+  const st = document.getElementById('sg-status');
+  const msg = document.getElementById('sg-msg');
+  const TIPOS = { novo_santo: 'Santo que falta', correcao: 'Correção', oracao: 'Oração', outro: 'Outro' };
+  const STATUS = { nova: 'Nova', em_analise: 'Em análise', resolvida: 'Resolvida' };
+  let TODAS = [], filtro = 'abertas';
+  const data = d => new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const erroTexto = e => {
+    const m = String((e && e.message) || '');
+    if(/limite_sugestoes/.test(m)) return 'Você enviou muitas sugestões na última hora. Tente de novo mais tarde.';
+    if(/sugestoes_mensagem_check/.test(m)) return 'Escreva pelo menos 5 caracteres.';
+    if(/sugestoes|relation|schema/i.test(m)) return 'As sugestões ainda não foram instaladas no banco (sugestoes.sql).';
+    return 'Não foi possível concluir agora. Tente novamente.';
+  };
+  const tag = s => `<span class="sg-tag ${escapeHtml(s)}">${escapeHtml(STATUS[s] || s)}</span>`;
+  const resposta = r => r ? `<div class="sg-resp"><b>Resposta da franqueadora</b>${escapeHtml(r)}</div>` : '';
+
+  async function minhas(){
+    const box = document.getElementById('sg-minhas');
+    box.innerHTML = '<div class="sg-vazio">Carregando...</div>';
+    const { data: lista, error } = await sb.from('sugestoes').select('id,criado_em,tipo,santo,mensagem,status,resposta').order('criado_em', { ascending: false }).limit(30);
+    if(error){ box.innerHTML = `<div class="sg-vazio">${escapeHtml(erroTexto(error))}</div>`; return; }
+    box.innerHTML = (lista || []).length ? lista.map(s => `
+      <div class="sg-item">
+        <div class="sg-topo"><b>${escapeHtml(TIPOS[s.tipo] || s.tipo)}</b>${s.santo ? `<span>${escapeHtml(s.santo)}</span>` : ''}<span>${data(s.criado_em)}</span>${tag(s.status)}</div>
+        <p class="sg-msgtxt">${escapeHtml(s.mensagem)}</p>${resposta(s.resposta)}
+      </div>`).join('') : '<div class="sg-vazio">Você ainda não enviou sugestões.</div>';
+  }
+
+  async function todas(){
+    const box = document.getElementById('sg-todas');
+    box.innerHTML = '<div class="sg-vazio">Carregando...</div>';
+    const { data: lista, error } = await sb.from('sugestoes').select('id,criado_em,unidade,email,tipo,santo,mensagem,status,resposta').order('criado_em', { ascending: false }).limit(500);
+    if(error){ box.innerHTML = `<div class="sg-vazio">${escapeHtml(erroTexto(error))}</div>`; return; }
+    TODAS = lista || [];
+    desenharTodas(); contarNovas();
+  }
+  function desenharTodas(){
+    const vis = TODAS.filter(s => filtro === 'todas' || (filtro === 'abertas' ? s.status !== 'resolvida' : s.status === filtro));
+    const n = k => TODAS.filter(s => s.status === k).length;
+    document.getElementById('sg-resumo').textContent = `${n('nova')} novas · ${n('em_analise')} em análise · ${n('resolvida')} resolvidas`;
+    document.getElementById('sg-todas').innerHTML = vis.length ? vis.map(s => `
+      <div class="sg-item" data-id="${s.id}">
+        <div class="sg-topo"><b>${escapeHtml(s.unidade || s.email)}</b><span>${escapeHtml(TIPOS[s.tipo] || s.tipo)}</span>${s.santo ? `<span>· ${escapeHtml(s.santo)}</span>` : ''}<span>${data(s.criado_em)}</span>${tag(s.status)}</div>
+        <p class="sg-msgtxt">${escapeHtml(s.mensagem)}</p>
+        <div class="sg-edit">
+          <div class="linha"><label for="sg-st-${s.id}" style="font-size:12px;color:var(--ink-soft)">Status</label>
+            <select id="sg-st-${s.id}">${Object.keys(STATUS).map(k => `<option value="${k}"${k === s.status ? ' selected' : ''}>${STATUS[k]}</option>`).join('')}</select></div>
+          <textarea rows="2" maxlength="1000" placeholder="Resposta para a loja (opcional)">${escapeHtml(s.resposta || '')}</textarea>
+          <div class="linha"><button type="button" class="small-btn" data-a="salvar">Salvar</button><span class="us-status"></span></div>
+        </div>
+      </div>`).join('') : '<div class="sg-vazio">Nenhuma sugestão neste filtro.</div>';
+  }
+  async function contarNovas(){
+    if(!(typeof adminMode !== 'undefined' && adminMode)) return;
+    const { count } = await sb.from('sugestoes').select('id', { count: 'exact', head: true }).eq('status', 'nova');
+    const el = document.getElementById('sg-novas');
+    el.hidden = !count; el.textContent = count ? String(count) : '';
+  }
+  document.addEventListener('admin-change', e => {
+    if(e.detail) contarNovas();
+    else document.getElementById('sg-novas').hidden = true;
+  });
+
+  function abrir(admin, santo, tipo){
+    if(!admin){
+      document.getElementById('sg-santo').value = santo || '';
+      const t = document.querySelector(`input[name="sg-tipo"][value="${tipo || 'novo_santo'}"]`); if(t) t.checked = true;
+      const dl = document.getElementById('sg-santos');
+      if(!dl.children.length && typeof DEV_DADOS !== 'undefined') dl.innerHTML = [...new Set(DEV_DADOS.map(d => d.nome))].map(n => `<option value="${escapeHtml(n)}">`).join('');
+    }
+    document.getElementById('sg-loja').hidden = admin;
+    document.getElementById('sg-admin').hidden = !admin;
+    document.getElementById('sg-titulo').textContent = admin ? 'Sugestões das unidades' : 'Sugestões';
+    st.textContent = ''; st.className = 'us-status';
+    back.hidden = false;
+    if(admin) todas(); else { minhas(); msg.focus(); }
+  }
+  document.getElementById('sg-btn').addEventListener('click', () => abrir(typeof adminMode !== 'undefined' && adminMode));
+  window.__sugerirSanto = nome => abrir(false, nome, 'correcao');
+  document.getElementById('sg-fechar').addEventListener('click', () => { back.hidden = true; });
+  back.addEventListener('click', e => { if(e.target === back) back.hidden = true; });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') back.hidden = true; });
+  msg.addEventListener('input', () => { document.getElementById('sg-cont').textContent = msg.value.length; });
+
+  document.getElementById('sg-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const texto = msg.value.trim();
+    if(texto.length < 5){ st.className = 'us-status erro'; st.textContent = 'Escreva pelo menos 5 caracteres.'; return; }
+    const tipo = (document.querySelector('input[name="sg-tipo"]:checked') || {}).value || 'outro';
+    const btn = document.getElementById('sg-enviar'); btn.disabled = true;
+    st.className = 'us-status'; st.textContent = 'Enviando...';
+    const santo = document.getElementById('sg-santo').value.trim();
+    const { error } = await sb.from('sugestoes').insert({ tipo, santo: santo || null, mensagem: texto });
+    btn.disabled = false;
+    if(error){ st.className = 'us-status erro'; st.textContent = erroTexto(error); return; }
+    st.className = 'us-status ok'; st.textContent = 'Sugestão enviada. Obrigado!';
+    msg.value = ''; document.getElementById('sg-santo').value = ''; document.getElementById('sg-cont').textContent = '0';
+    minhas();
+  });
+
+  document.getElementById('sg-filtro').addEventListener('click', e => {
+    const b = e.target.closest('.seg-btn'); if(!b) return;
+    document.querySelectorAll('#sg-filtro .seg-btn').forEach(x => x.classList.toggle('is-active', x === b));
+    filtro = b.dataset.val; desenharTodas();
+  });
+  document.getElementById('sg-todas').addEventListener('click', async e => {
+    const b = e.target.closest('button[data-a="salvar"]'); if(!b) return;
+    const item = b.closest('.sg-item'); const id = Number(item.dataset.id);
+    const status = item.querySelector('select').value;
+    const resp = item.querySelector('textarea').value.trim();
+    const aviso = item.querySelector('.linha .us-status');
+    b.disabled = true; aviso.className = 'us-status'; aviso.textContent = 'Salvando...';
+    const { error } = await sb.from('sugestoes').update({ status, resposta: resp || null }).eq('id', id);
+    b.disabled = false;
+    if(error){ aviso.className = 'us-status erro'; aviso.textContent = erroTexto(error); return; }
+    const s = TODAS.find(x => x.id === id); if(s){ s.status = status; s.resposta = resp || null; }
+    aviso.className = 'us-status ok'; aviso.textContent = 'Salvo.';
+    contarNovas();
+    setTimeout(desenharTodas, 900);
   });
 })();
 
@@ -3521,8 +3720,10 @@ const DEV_FESTAS = {"Nossa Senhora Aparecida": "12/10", "Nossa Senhora de Fátim
       <div class="dv-sec"><h3>Origem / Aparição</h3><p>${esc(d.origem)}</p></div>
       <div class="dv-sec"><h3>Padroeiro(a) de</h3><p>${esc(d.padroeiro)}</p></div>
       ${extra}
+      <button type="button" class="dv-sugerir" id="dv-sugerir">Sugerir correção</button>
       ${d.extra && typeof adminMode !== 'undefined' && adminMode ? '<button type="button" class="dv-extra-del" id="dv-extra-del">Excluir este santo do Devocionário</button>' : ''}`;
     backdrop.hidden = false;
+    document.getElementById('dv-sugerir').addEventListener('click', () => { fechar(); if(window.__sugerirSanto) window.__sugerirSanto(d.nome); });
     const del = document.getElementById('dv-extra-del');
     if(del) del.addEventListener('click', () => window.__dvExcluirExtra(d));
     document.getElementById('dv-close').addEventListener('click', fechar);
