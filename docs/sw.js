@@ -2,7 +2,7 @@
    - página: busca sempre a versão mais nova na internet; sem internet, abre a última salva
    - ícones e manifesto: guardados no aparelho
    - dados do Supabase, login e verificação humana: nunca passam por aqui */
-const VERSAO = 'sss-2026-10-29-1';
+const VERSAO = 'sss-2026-10-29-2';
 const ESTATICOS = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',

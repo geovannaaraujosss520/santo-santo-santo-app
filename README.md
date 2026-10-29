@@ -7,7 +7,7 @@ App web instalável (PWA) para as unidades da rede Santo Santo Santo: catálogo 
 - **Catálogo**: busca, filtros por fornecedor, categoria e garantia, ficha da peça, lista ou blocos.
 - **Devocionário**: 463 santos, santas e títulos de Nossa Senhora, santos do mês com calendário, exportação em PDF e planilha, e sugestões das lojas (santo que falta, correção, oração).
 - **Campanha da loja**: santos em destaque do mês atual e do seguinte, definidos pela franqueadora.
-- **Admin**: edição de peças e fotos, importação por planilha, fornecedores ativos e inativos, campanha, santos novos e usuários das unidades.
+- **Admin**: edição, inativação e exclusão de peças, fotos, importação por planilha, fornecedores ativos e inativos, campanha, santos novos e usuários das unidades.
 - **Acesso**: login por unidade, verificação humana (hCaptcha), troca de senha e limite de tentativas.
 - **Celular**: instalável na tela inicial e abre sem internet com o último catálogo carregado.
 
@@ -54,6 +54,7 @@ Os scripts ficam em `supabase/` e rodam em **SQL Editor › New query › Run**.
 | `campanha_santos.sql` | Tabela da campanha de santos em destaque |
 | `santos_extras.sql` | Tabela dos santos cadastrados pelo admin |
 | `sugestoes.sql` | Sugestões do Devocionário: a loja envia e vê as próprias; o admin vê todas e responde |
+| `pecas_ativas.sql` | Coluna de peça ativa/inativa; a loja só lê peças ativas |
 | `gestao_usuarios.sql` | Funções do painel de usuários (criar, listar, redefinir senha, excluir) |
 | `corrigir_seguranca.sql` | Regras definitivas: ler só logado, alterar só admin, nada sem login |
 | `auditoria_seguranca.sql` | Auditoria somente leitura; não deve aparecer nenhuma linha CRITICO |

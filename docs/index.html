@@ -806,6 +806,11 @@
   #modal-backdrop{align-items:flex-start !important;}
   #modal-backdrop .modal{margin:auto auto 0 !important;}
   @media (min-width:900px){ #modal-backdrop .modal{margin:auto !important;} }
+  .peca-gestao{margin-top:16px; padding:12px 14px; border:1px solid var(--hairline-strong); border-radius:12px; background:var(--paper); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;}
+  .peca-gestao-txt b{display:block; font-size:13px; color:var(--brass-deep);}
+  .peca-gestao-txt span{font-size:12px; color:var(--ink-soft);}
+  .peca-gestao-btns{display:flex; gap:8px; flex-wrap:wrap;}
+  .peca-gestao .import-status{flex-basis:100%;}
 </style>
 <style>html.framed body{display:none !important;}</style>
 <script>if(window.top !== window.self){ document.documentElement.classList.add('framed'); try{ window.top.location = window.self.location; }catch(e){} }</script>
@@ -1241,7 +1246,7 @@ let currentPage = 1;
 let lastSig = '';
 const isActive = nome => FORN[nome] !== false;
 
-const state = { search:'', fornecedor:'', categoria:'', garantia:'todas' };
+const state = { search:'', fornecedor:'', categoria:'', garantia:'todas', inativas:'' };
 
 function rowToItem(r){
   return {
@@ -1260,10 +1265,11 @@ function rowToItem(r){
     codigo_barra: r.codigo_barra,
     tem_garantia: r.tem_garantia,
     foto_url: r.foto_url || null,
+    ativo: r.ativo === false ? false : true,
   };
 }
 
-const COLS_LISTA = 'id,fornecedor,nome,categoria,material,prazo_garantia,codigo_barra,tem_garantia,foto_url';
+let COLS_LISTA = 'id,fornecedor,nome,categoria,material,prazo_garantia,codigo_barra,tem_garantia,foto_url,ativo';
 const COLS_DETALHE = 'id,descricao,cobertura_garantia,exclusoes_garantia,recomendacoes_uso,restricoes_uso';
 const CACHE_KEY = 'sss-catalogo-v1';
 let DETALHES = Promise.resolve();
@@ -1336,7 +1342,11 @@ async function loadCatalog(){
   const fornNovo = {};
   try{
     const [lista, forn] = await Promise.all([
-      buscarProdutos(COLS_LISTA),
+      buscarProdutos(COLS_LISTA).catch(err => {
+        // banco ainda sem a coluna "ativo": carrega sem ela
+        if(/ativo/.test(String((err && err.message) || '')) && COLS_LISTA.endsWith(',ativo')){ COLS_LISTA = COLS_LISTA.slice(0, -6); return buscarProdutos(COLS_LISTA); }
+        throw err;
+      }),
       sb.from('fornecedores').select('nome, ativo').then(({ data, error }) => { if(error) throw error; return data || []; }).catch(() => null)
     ]);
     rows = lista;
@@ -1450,7 +1460,8 @@ function buildFilterOptions(){
     chip('all', '', 'Todas as peças', !state.fornecedor && !state.categoria && state.garantia === 'todas') +
     chip('garantia', 'com', 'Com garantia', state.garantia === 'com') +
     chip('garantia', 'sem', 'Sem garantia', state.garantia === 'sem') +
-    topF.map(f => chip('fornecedor', f, f, state.fornecedor === f)).join('');
+    topF.map(f => chip('fornecedor', f, f, state.fornecedor === f)).join('') +
+    (adminMode ? chip('inativas', '1', 'Peças inativas (' + CATALOG.filter(i => i.ativo === false).length + ')', state.inativas === '1') : '');
   syncFiltrosUI();
 }
 
@@ -1473,6 +1484,8 @@ function abrirFiltros(on){
 
 function matches(item){
   if(!adminMode && !isActive(item.fornecedor)) return false;
+  if(!adminMode && item.ativo === false) return false;
+  if(state.inativas && item.ativo !== false) return false;
   if(state.fornecedor && item.fornecedor !== state.fornecedor) return false;
   if(state.categoria && item.categoria !== state.categoria) return false;
   if(state.garantia === 'com' && !item.tem_garantia) return false;
@@ -1506,11 +1519,12 @@ function cardHtml(item){
   const stampClass = item.tem_garantia ? 'com' : 'sem';
   const stampIcon = item.tem_garantia ? CHECK_ICON : DASH_ICON;
   const ativo = isActive(item.fornecedor);
+  const pecaInativa = item.ativo === false;
   return `
-  <article class="card${ativo ? '' : ' is-inactive'}" data-id="${escapeHtml(item.id)}" tabindex="0">
+  <article class="card${ativo && !pecaInativa ? '' : ' is-inactive'}" data-id="${escapeHtml(item.id)}" tabindex="0">
     <div class="card-thumb">
       ${photoBlock(item)}
-      <div class="supplier-overlay">${ativo ? '' : 'Inativo · '}${escapeHtml(item.fornecedor)}</div>
+      <div class="supplier-overlay">${pecaInativa ? 'Peça inativa · ' : (ativo ? '' : 'Inativo · ')}${escapeHtml(item.fornecedor)}</div>
       <div class="warranty-stamp ${stampClass}" title="${item.tem_garantia ? 'Com garantia' : 'Sem garantia'}">${stampIcon}</div>
     </div>
     <div class="card-info">
@@ -1602,6 +1616,17 @@ function modalHtml(item){
         <div class="admin-row edit-actions">
           <button type="button" class="file-btn" id="save-fields-btn">Salvar alterações</button>
           <span id="save-fields-status" class="import-status" hidden></span>
+        </div>
+        <div class="peca-gestao">
+          <div class="peca-gestao-txt">
+            <b>${item.ativo === false ? 'Peça inativa' : 'Peça ativa'}</b>
+            <span>${item.ativo === false ? 'Não aparece para as lojas.' : 'Aparece no catálogo das lojas.'}</span>
+          </div>
+          <div class="peca-gestao-btns">
+            <button type="button" class="small-btn" id="toggle-ativo-btn">${item.ativo === false ? 'Reativar peça' : 'Inativar peça'}</button>
+            <button type="button" class="small-btn danger" id="delete-peca-btn">Excluir peça</button>
+          </div>
+          <span id="peca-gestao-status" class="import-status" hidden></span>
         </div>
       </div>
     </div>`;
@@ -1737,6 +1762,29 @@ async function openModal(id){
       });
     }
 
+    const gestaoStatus = document.getElementById('peca-gestao-status');
+    const avisoGestao = (txt, erro) => { gestaoStatus.hidden = false; gestaoStatus.className = 'import-status' + (erro ? ' error' : ''); gestaoStatus.textContent = txt; };
+    const erroGestao = err => /ativo/.test(String((err && err.message) || '')) ? 'Falta instalar a opção no banco (pecas_ativas.sql).' : 'Não foi possível concluir agora. Tente novamente.';
+    document.getElementById('toggle-ativo-btn').addEventListener('click', async e => {
+      const novo = item.ativo === false;
+      e.target.disabled = true; avisoGestao(novo ? 'Reativando...' : 'Inativando...');
+      const { error } = await sb.from('produtos').update({ ativo: novo }).eq('id', id);
+      e.target.disabled = false;
+      if(error){ avisoGestao(erroGestao(error), true); return; }
+      item.ativo = novo;
+      buildFilterOptions(); render();
+      openModal(id);
+    });
+    document.getElementById('delete-peca-btn').addEventListener('click', async e => {
+      if(!confirm('Excluir a peça "' + item.nome + '" (ID ' + item.id + ')?\n\nEla some do app para todas as lojas e não dá para desfazer.\nSe quiser só esconder, use "Inativar peça".')) return;
+      e.target.disabled = true; avisoGestao('Excluindo...');
+      const { data, error } = await sb.from('produtos').delete().eq('id', id).select('id');
+      if(error || !data || !data.length){ e.target.disabled = false; avisoGestao(error ? erroGestao(error) : 'A peça não foi excluída. Confira se você está como admin.', true); return; }
+      const k = CATALOG.indexOf(item); if(k >= 0) CATALOG.splice(k, 1);
+      closeModal();
+      buildFilterOptions(); render(); renderFornecedores();
+    });
+
     document.getElementById('save-fields-btn').addEventListener('click', async () => {
       const statusEl = document.getElementById('save-fields-status');
       const fields = {
@@ -1816,7 +1864,7 @@ document.getElementById('clear-search').addEventListener('click', () => {
 document.getElementById('quick-chips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if(!b) return;
   const k = b.dataset.k, v = b.dataset.v;
-  if(k === 'all'){ state.fornecedor = ''; state.categoria = ''; state.garantia = 'todas'; }
+  if(k === 'all'){ state.fornecedor = ''; state.categoria = ''; state.garantia = 'todas'; state.inativas = ''; }
   else state[k] = state[k] === v ? (k === 'garantia' ? 'todas' : '') : v;
   buildFilterOptions(); render();
 });
@@ -1969,6 +2017,7 @@ document.getElementById('import-input').addEventListener('change', async e => {
       item.foto_url = fotoLink || fotoPrevia || null;
 
       if(existing >= 0){
+        item.ativo = CATALOG[existing].ativo;
         CATALOG[existing] = item;
         atualizados++;
       } else {
