@@ -888,6 +888,7 @@
             <input type="file" id="import-fotos-input" accept=".xlsx,.xls" hidden>
           </label>
           <button type="button" id="download-template-fotos-btn" class="ghost-btn">Baixar modelo de fotos</button>
+          <button type="button" id="download-sem-foto-btn" class="ghost-btn">Baixar lista de peças sem foto</button>
         </div>
         <p id="import-fotos-status" class="import-status" hidden></p>
       </div>
@@ -1246,7 +1247,7 @@ let currentPage = 1;
 let lastSig = '';
 const isActive = nome => FORN[nome] !== false;
 
-const state = { search:'', fornecedor:'', categoria:'', garantia:'todas', inativas:'' };
+const state = { search:'', fornecedor:'', categoria:'', garantia:'todas', inativas:'', foto:'' };
 
 function rowToItem(r){
   return {
@@ -1461,7 +1462,9 @@ function buildFilterOptions(){
     chip('garantia', 'com', 'Com garantia', state.garantia === 'com') +
     chip('garantia', 'sem', 'Sem garantia', state.garantia === 'sem') +
     topF.map(f => chip('fornecedor', f, f, state.fornecedor === f)).join('') +
-    (adminMode ? chip('inativas', '1', 'Peças inativas (' + CATALOG.filter(i => i.ativo === false).length + ')', state.inativas === '1') : '');
+    (adminMode ? chip('foto', 'sem', 'Sem foto (' + CATALOG.filter(i => !i.foto_url).length + ')', state.foto === 'sem') +
+                 chip('foto', 'com', 'Com foto (' + CATALOG.filter(i => i.foto_url).length + ')', state.foto === 'com') +
+                 chip('inativas', '1', 'Peças inativas (' + CATALOG.filter(i => i.ativo === false).length + ')', state.inativas === '1') : '');
   syncFiltrosUI();
 }
 
@@ -1486,6 +1489,8 @@ function matches(item){
   if(!adminMode && !isActive(item.fornecedor)) return false;
   if(!adminMode && item.ativo === false) return false;
   if(state.inativas && item.ativo !== false) return false;
+  if(adminMode && state.foto === 'com' && !item.foto_url) return false;
+  if(adminMode && state.foto === 'sem' && item.foto_url) return false;
   if(state.fornecedor && item.fornecedor !== state.fornecedor) return false;
   if(state.categoria && item.categoria !== state.categoria) return false;
   if(state.garantia === 'com' && !item.tem_garantia) return false;
@@ -1864,7 +1869,7 @@ document.getElementById('clear-search').addEventListener('click', () => {
 document.getElementById('quick-chips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if(!b) return;
   const k = b.dataset.k, v = b.dataset.v;
-  if(k === 'all'){ state.fornecedor = ''; state.categoria = ''; state.garantia = 'todas'; state.inativas = ''; }
+  if(k === 'all'){ state.fornecedor = ''; state.categoria = ''; state.garantia = 'todas'; state.inativas = ''; state.foto = ''; }
   else state[k] = state[k] === v ? (k === 'garantia' ? 'todas' : '') : v;
   buildFilterOptions(); render();
 });
@@ -2108,6 +2113,18 @@ document.getElementById('import-fotos-input').addEventListener('change', async e
   e.target.value = '';
 });
 
+document.getElementById('download-sem-foto-btn').addEventListener('click', () => {
+  ensureXLSX();
+  const lista = CATALOG.filter(i => !i.foto_url)
+    .sort((a, b) => (a.fornecedor || '').localeCompare(b.fornecedor || '', 'pt-BR') || (a.nome || '').localeCompare(b.nome || '', 'pt-BR'))
+    .map(i => ({ ID_Produto: i.id, Foto_URL: '', Fornecedor: i.fornecedor || '', Nome: i.nome || '', Categoria: i.categoria || '', Situacao: i.ativo === false ? 'Inativa' : 'Ativa' }));
+  if(!lista.length){ alert('Todas as peças já têm foto.'); return; }
+  const ws = XLSX.utils.json_to_sheet(lista, { header: ['ID_Produto','Foto_URL','Fornecedor','Nome','Categoria','Situacao'] });
+  ws['!cols'] = [{ wch: 18 }, { wch: 50 }, { wch: 30 }, { wch: 50 }, { wch: 22 }, { wch: 10 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Fotos');
+  XLSX.writeFile(wb, 'pecas_sem_foto_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+});
 document.getElementById('download-template-fotos-btn').addEventListener('click', () => {
   const exemplo = {
     ID_Produto: '0001.0001',
