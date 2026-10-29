@@ -1230,7 +1230,7 @@ function escapeHtml(s){
 
 function hasGarantia(prazo){
   const p = String(prazo || '').trim().toLowerCase();
-  return !!p && !['sem garantia','nao','não','n/a','-'].includes(p);
+  return !!p && !p.startsWith('sem garantia') && !['nao','não','n/a','-'].includes(p);
 }
 
 let CATALOG = [];
